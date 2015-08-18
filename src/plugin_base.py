@@ -3,7 +3,7 @@ import os
 import inspect
 import importlib
 
-plugin_config_path = 'plugins/plugins.conf'
+plugin_config_path = '../plugins/plugins.conf'
 
 #~ Plugins should subclass this
 class Plugin_Base():
