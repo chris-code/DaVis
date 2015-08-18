@@ -66,8 +66,10 @@ class Point_Cloud(plugin_base.Plugin_Base):
 		super().__init__()
 		
 		self.program.data_frame.add_action('New uniform', 'pq_new_uniform', None)
-		self.register_event_handler('redraw', self.draw)
+		self.program.data_frame.add_action('Clear', 'pq_clear', None)
 		self.register_event_handler('pq_new_uniform', self.new_uniform)
+		self.register_event_handler('pq_clear', self.clear)
+		self.register_event_handler('redraw', self.draw)
 	
 	def new_uniform(self, event):
 		query_window = Uniform_Window(self.program)
@@ -80,14 +82,22 @@ class Point_Cloud(plugin_base.Plugin_Base):
 		pointsX1 = np.random.uniform(minX1, maxX1, (point_count, 1))
 		pointsX2 = np.random.uniform(minX2, maxX2, (point_count, 1))
 		points = np.column_stack([pointsX1, pointsX2])
-		self.program.get_data()['points'] = points
+		try:
+			self.program.get_data()['points'].append( (points, 'black') )
+		except KeyError:
+			self.program.get_data()['points'] = [ (points, 'black') ]
 		
+		self.program.redraw()
+	
+	def clear(self, event):
+		self.program.get_data()['points'] = []
 		self.program.redraw()
 	
 	def draw(self, event):
 		canvas = self.program.get_canvas()
-		for point in self.program.get_data()['points']:
-			canvas.create_oval(point[0], point[1], point[0], point[1])
+		for point_set, color in self.program.get_data()['points']:
+			for point in point_set:
+				canvas.create_oval(point[0], point[1], point[0], point[1], fill=color, outline=color)
 
 
 
