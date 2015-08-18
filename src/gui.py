@@ -19,6 +19,7 @@ class Main_window(tk.Tk):
 		self.data_frame = Data_frame(self, plugin_base)
 		self.visualization_frame = Visualization_frame(self, plugin_base)
 		self.operations_frame = Operations_frame(self, plugin_base)
+		ttk.Sizegrip(self).grid(column=3, row=0, sticky='E S')
 		
 	# Convenience methods
 	def get_data(self):
@@ -32,7 +33,7 @@ class Main_window(tk.Tk):
 
 class Data_frame(ttk.Frame):
 	def __init__(self, parent, plugin_base):
-		ttk.Frame.__init__(self, parent)
+		ttk.Frame.__init__(self, parent, padding=10)
 		self.grid(column=0, row=0, sticky='W N E S')
 		self.columnconfigure(0, weight=1)
 		
@@ -108,7 +109,7 @@ class Visualization_frame(ttk.Frame):
 
 class Operations_frame(ttk.Frame):
 	def __init__(self, parent, plugin_base):
-		ttk.Frame.__init__(self, parent)
+		ttk.Frame.__init__(self, parent, padding=10)
 		self.grid(column=2, row=0, sticky='W N E S')
 		self.columnconfigure(0, weight=1)
 		
