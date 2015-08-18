@@ -91,17 +91,20 @@ class Visualization_frame(ttk.Frame):
 		self.rescale()
 		
 		#~ Center everything in visible area
-		canvas_dims = (self.canvas.winfo_width(), self.canvas.winfo_height())
-		new_scrollregion = list(self.canvas.bbox('all'))
-		if new_scrollregion[2] - new_scrollregion[0] < canvas_dims[0]:
-			diff = canvas_dims[0] - (new_scrollregion[2] - new_scrollregion[0])
-			new_scrollregion[2] += diff // 2
-			new_scrollregion[0] -= diff // 2
-		if new_scrollregion[3] - new_scrollregion[1] < canvas_dims[1]:
-			diff = canvas_dims[1] - (new_scrollregion[3] - new_scrollregion[1])
-			new_scrollregion[3] += diff // 2
-			new_scrollregion[1] -= diff // 2
-		self.canvas.configure(scrollregion = new_scrollregion)
+		try:
+			canvas_dims = (self.canvas.winfo_width(), self.canvas.winfo_height())
+			new_scrollregion = list(self.canvas.bbox('all')) # bbox can be None, causing a TypeError from list()
+			if new_scrollregion[2] - new_scrollregion[0] < canvas_dims[0]:
+				diff = canvas_dims[0] - (new_scrollregion[2] - new_scrollregion[0])
+				new_scrollregion[2] += diff // 2
+				new_scrollregion[0] -= diff // 2
+			if new_scrollregion[3] - new_scrollregion[1] < canvas_dims[1]:
+				diff = canvas_dims[1] - (new_scrollregion[3] - new_scrollregion[1])
+				new_scrollregion[3] += diff // 2
+				new_scrollregion[1] -= diff // 2
+			self.canvas.configure(scrollregion = new_scrollregion)
+		except TypeError:
+			pass
 
 class Operations_frame(ttk.Frame):
 	def __init__(self, parent, plugin_base):
