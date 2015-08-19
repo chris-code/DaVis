@@ -1,4 +1,8 @@
-import numpy as np
+try:
+	import numpy as np
+except ImportError:
+	raise Exception('This plugin requires the numpy library, which failed to import. \
+	Install the python3 version of numpy.')
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.colorchooser as tkcc
@@ -40,31 +44,33 @@ class Parameter_Query_Window(tk.Toplevel):
 		frame = ttk.Frame(notebook, padding=10)
 		self.uniform_parameters = {}
 		
+		#~ x_1 dimension
 		x1_frame = ttk.LabelFrame(frame, padding=5, text='X1 dimension')
 		x1_frame.grid(column=0, row=0, sticky='N E W S', padx=5, pady=5)
 		
-		ttk.Label(x1_frame, text='Min').grid(column=0, row=0, padx=5, pady=5)
+		ttk.Label(x1_frame, text='Min').grid(column=0, row=0, padx=5, pady=5, sticky='W')
 		self.uniform_parameters['x1_min'] = tk.DoubleVar()
 		self.uniform_parameters['x1_min'].set(-100)
 		x1_min_spinbox = tk.Spinbox(x1_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.uniform_parameters['x1_min'], width=5)
 		x1_min_spinbox.grid(column=1, row=0, padx=5, pady=5)
 		
-		ttk.Label(x1_frame, text='Max').grid(column=0, row=1, padx=5, pady=5)
+		ttk.Label(x1_frame, text='Max').grid(column=0, row=1, padx=5, pady=5, sticky='W')
 		self.uniform_parameters['x1_max'] = tk.DoubleVar()
 		self.uniform_parameters['x1_max'].set(100)
 		x1_min_spinbox = tk.Spinbox(x1_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.uniform_parameters['x1_max'], width=5)
 		x1_min_spinbox.grid(column=1, row=1, padx=5, pady=5)
 		
+		#~ x_2 dimension
 		x2_frame = ttk.LabelFrame(frame, padding=5, text='X2 dimension')
-		x2_frame.grid(column=1, row=0, sticky='N E W S', padx=5, pady=5)
+		x2_frame.grid(column=0, row=1, sticky='N E W S', padx=5, pady=5)
 		
-		ttk.Label(x2_frame, text='Min').grid(column=0, row=0, padx=5, pady=5)
+		ttk.Label(x2_frame, text='Min').grid(column=0, row=0, padx=5, pady=5, sticky='W')
 		self.uniform_parameters['x2_min'] = tk.DoubleVar()
 		self.uniform_parameters['x2_min'].set(-30)
 		x2_min_spinbox = tk.Spinbox(x2_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.uniform_parameters['x2_min'], width=5)
 		x2_min_spinbox.grid(column=1, row=0, padx=5, pady=5)
 		
-		ttk.Label(x2_frame, text='Max').grid(column=0, row=1, padx=5, pady=5)
+		ttk.Label(x2_frame, text='Max').grid(column=0, row=1, padx=5, pady=5, sticky='W')
 		self.uniform_parameters['x2_max'] = tk.DoubleVar()
 		self.uniform_parameters['x2_max'].set(30)
 		x2_min_spinbox = tk.Spinbox(x2_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.uniform_parameters['x2_max'], width=5)
@@ -73,8 +79,41 @@ class Parameter_Query_Window(tk.Toplevel):
 		return frame
 		
 	def make_normal_frame(self, notebook): # TODO implement this
-		frame = ttk.Frame(notebook)
-		ttk.Label(frame, text='bar').grid(column=0, row=0)
+		frame = ttk.Frame(notebook, padding=10)
+		self.normal_parameters = {}
+		
+		#~ x_1 dimension
+		x1_frame = ttk.LabelFrame(frame, padding=5, text='X1 dimension')
+		x1_frame.grid(column=0, row=0, sticky='N E W S', padx=5, pady=5)
+		
+		ttk.Label(x1_frame, text='Mean').grid(column=0, row=0, padx=5, pady=5, sticky='W')
+		self.normal_parameters['x1_mean'] = tk.DoubleVar()
+		self.normal_parameters['x1_mean'].set(0)
+		x1_mean_spinbox = tk.Spinbox(x1_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.normal_parameters['x1_mean'], width=5)
+		x1_mean_spinbox.grid(column=1, row=0, padx=5, pady=5)
+		
+		ttk.Label(x1_frame, text='Standard deviation').grid(column=0, row=1, padx=5, pady=5, sticky='W')
+		self.normal_parameters['x1_std_dev'] = tk.DoubleVar()
+		self.normal_parameters['x1_std_dev'].set(30)
+		x1_std_dev_spinbox = tk.Spinbox(x1_frame, from_=0.001, to=1000.0, increment=10, textvariable=self.normal_parameters['x1_std_dev'], width=5)
+		x1_std_dev_spinbox.grid(column=1, row=1, padx=5, pady=5)
+		
+		#~ x_2 dimension
+		x2_frame = ttk.LabelFrame(frame, padding=5, text='X2 dimension')
+		x2_frame.grid(column=0, row=1, sticky='N E W S', padx=5, pady=5)
+		
+		ttk.Label(x2_frame, text='Mean').grid(column=0, row=0, padx=5, pady=5, sticky='W')
+		self.normal_parameters['x2_mean'] = tk.DoubleVar()
+		self.normal_parameters['x2_mean'].set(0)
+		x2_mean_spinbox = tk.Spinbox(x2_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.normal_parameters['x2_mean'], width=5)
+		x2_mean_spinbox.grid(column=1, row=0, padx=5, pady=5)
+		
+		ttk.Label(x2_frame, text='Standard Deviation').grid(column=0, row=1, padx=5, pady=5, sticky='W')
+		self.normal_parameters['x2_std_dev'] = tk.DoubleVar()
+		self.normal_parameters['x2_std_dev'].set(30)
+		x2_std_dev_spinbox = tk.Spinbox(x2_frame, from_=0.001, to=1000.0, increment=10, textvariable=self.normal_parameters['x2_std_dev'], width=5)
+		x2_std_dev_spinbox.grid(column=1, row=1, padx=5, pady=5)
+		
 		return frame
 	
 	def color_choose_action(self):
@@ -94,17 +133,18 @@ class Parameter_Query_Window(tk.Toplevel):
 		window.wait_window()
 		
 		if window.distribution is not None:
+			parameters = {}
+			count = window.number_of_points.get()
+			color = window.color
+			
 			if window.distribution == 'Uniform':
-				count = window.number_of_points.get()
-				parameters = {}
-				parameters['x1_min'] = window.uniform_parameters['x1_min'].get()
-				parameters['x1_max'] = window.uniform_parameters['x1_max'].get()
-				parameters['x2_min'] = window.uniform_parameters['x2_min'].get()
-				parameters['x2_max'] = window.uniform_parameters['x2_max'].get()
-				color = window.color
-				return 'Uniform', parameters, count, color
+				for param_name in window.uniform_parameters.keys():
+					parameters[param_name] = window.uniform_parameters[param_name].get()
 			elif window.distribution == 'Normal':
-				raise Exception('Not yet implemented') # TODO implement this
+				for param_name in window.normal_parameters.keys():
+					parameters[param_name] = window.normal_parameters[param_name].get()
+			
+			return window.distribution, parameters, count, color
 		else:
 			return None
 
@@ -112,13 +152,13 @@ class Point_Cloud(plugin_base.Plugin_Base):
 	def __init__(self):
 		super().__init__()
 		
-		self.program.data_frame.add_action('New uniform', 'pq_new_uniform', None)
+		self.program.data_frame.add_action('New from distribution', 'pq_new_from_distribution', None)
 		self.program.data_frame.add_action('Clear', 'pq_clear', None)
-		self.register_event_handler('pq_new_uniform', self.new_uniform)
+		self.register_event_handler('pq_new_from_distribution', self.new_from_distribution)
 		self.register_event_handler('pq_clear', self.clear)
 		self.register_event_handler('redraw', self.draw)
 	
-	def new_uniform(self, event):
+	def new_from_distribution(self, event):
 		result = Parameter_Query_Window.get_values(self.program)
 		
 		if result is not None:
@@ -129,7 +169,10 @@ class Point_Cloud(plugin_base.Plugin_Base):
 				points_x2 = np.random.uniform(parameters['x2_min'], parameters['x2_max'], (count, 1))
 				points = np.column_stack([points_x1, points_x2])
 			elif distribution == 'Normal':
-				pass # TODO implement this
+				#~ pass # TODO implement this
+				points_x1 = np.random.normal(parameters['x1_mean'], parameters['x1_std_dev'], (count, 1))
+				points_x2 = np.random.normal(parameters['x2_mean'], parameters['x2_std_dev'], (count, 1))
+				points = np.column_stack([points_x1, points_x2])
 			else:
 				raise Exception('Unknown distribution')
 			
@@ -145,7 +188,11 @@ class Point_Cloud(plugin_base.Plugin_Base):
 	
 	def draw(self, event):
 		canvas = self.program.get_canvas()
-		for point_set, color in self.program.get_data()['points']:
+		try:
+			data = self.program.get_data()['points']
+		except KeyError:
+			return # No data (yet), that's ok.
+		for point_set, color in data:
 			for point in point_set:
 				canvas.create_oval(point[0], point[1], point[0], point[1], fill=color, outline=color)
 

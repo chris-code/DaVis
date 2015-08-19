@@ -26,9 +26,10 @@ class Plugin_Base():
 	def _handle(self, event):
 		event_id, event_appendix = event
 		try:
-			self._event_handlers[event_id](event)
+			handler = self._event_handlers[event_id]
 		except KeyError:
-			pass # Plugin doesn't handle this event, that's ok.
+			return # Plugin doesn't handle this event, that's ok.
+		handler(event)
 	
 	#~ With this method, your plugin can register handlers for certain events.
 	#~ The handler should accept one parameter, event, which is a 2-tuple of
@@ -51,6 +52,9 @@ def load_plugins(program):
 			except ImportError:
 				error_string = 'Could not load plugin\n{0}\nCheck your plugin.conf'
 				program.show_warning(error_string.format(plugin_path), 'Plugin error')
+			except Exception as e:
+				error_string = 'Error while loading\n{0}\nThe plugin said:\n{1}'
+				program.show_warning(error_string.format(plugin_path, e), 'Plugin error')
 			else:
 				#~ Instantiate (and thus load) every plugin in there
 				for name, obj in inspect.getmembers(imported):
