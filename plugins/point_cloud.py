@@ -19,8 +19,8 @@ class Parameter_Query_Window(tk.Toplevel):
 		
 		self.nb = ttk.Notebook(self)
 		self.nb.grid(column=0, row=0, sticky='N E W S', padx=10, pady=10)
-		self.nb.add(self.make_uniform_frame(self.nb), text='Uniform')
-		self.nb.add(self.make_normal_frame(self.nb), text='Normal')
+		self.nb.add(self.make_uniform_frame(self.nb), text='Uniform', sticky='EW')
+		self.nb.add(self.make_normal_frame(self.nb), text='Normal', sticky='EW')
 		
 		general_options_frame = ttk.LabelFrame(self, padding=5, text='General options')
 		general_options_frame.grid(column=0, row=1, sticky='N E W S', padx=5, pady=5)
@@ -43,42 +43,45 @@ class Parameter_Query_Window(tk.Toplevel):
 	def make_uniform_frame(self, notebook):
 		frame = ttk.Frame(notebook, padding=10)
 		self.uniform_parameters = {}
+		frame.columnconfigure(0, weight=1)
 		
 		#~ x_1 dimension
 		x1_frame = ttk.LabelFrame(frame, padding=5, text='X1 dimension')
 		x1_frame.grid(column=0, row=0, sticky='N E W S', padx=5, pady=5)
+		x1_frame.columnconfigure(1, weight=1)
 		
 		ttk.Label(x1_frame, text='Min').grid(column=0, row=0, padx=5, pady=5, sticky='W')
 		self.uniform_parameters['x1_min'] = tk.DoubleVar()
 		self.uniform_parameters['x1_min'].set(-100)
 		x1_min_spinbox = tk.Spinbox(x1_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.uniform_parameters['x1_min'], width=5)
-		x1_min_spinbox.grid(column=1, row=0, padx=5, pady=5)
+		x1_min_spinbox.grid(column=1, row=0, sticky='E', padx=5, pady=5)
 		
 		ttk.Label(x1_frame, text='Max').grid(column=0, row=1, padx=5, pady=5, sticky='W')
 		self.uniform_parameters['x1_max'] = tk.DoubleVar()
 		self.uniform_parameters['x1_max'].set(100)
 		x1_min_spinbox = tk.Spinbox(x1_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.uniform_parameters['x1_max'], width=5)
-		x1_min_spinbox.grid(column=1, row=1, padx=5, pady=5)
+		x1_min_spinbox.grid(column=1, row=1, sticky='E', padx=5, pady=5)
 		
 		#~ x_2 dimension
 		x2_frame = ttk.LabelFrame(frame, padding=5, text='X2 dimension')
 		x2_frame.grid(column=0, row=1, sticky='N E W S', padx=5, pady=5)
+		x2_frame.columnconfigure(1, weight=1)
 		
 		ttk.Label(x2_frame, text='Min').grid(column=0, row=0, padx=5, pady=5, sticky='W')
 		self.uniform_parameters['x2_min'] = tk.DoubleVar()
 		self.uniform_parameters['x2_min'].set(-30)
 		x2_min_spinbox = tk.Spinbox(x2_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.uniform_parameters['x2_min'], width=5)
-		x2_min_spinbox.grid(column=1, row=0, padx=5, pady=5)
+		x2_min_spinbox.grid(column=1, row=0, sticky='E', padx=5, pady=5)
 		
 		ttk.Label(x2_frame, text='Max').grid(column=0, row=1, padx=5, pady=5, sticky='W')
 		self.uniform_parameters['x2_max'] = tk.DoubleVar()
 		self.uniform_parameters['x2_max'].set(30)
 		x2_min_spinbox = tk.Spinbox(x2_frame, from_=-1000.0, to=1000.0, increment=10, textvariable=self.uniform_parameters['x2_max'], width=5)
-		x2_min_spinbox.grid(column=1, row=1, padx=5, pady=5)
+		x2_min_spinbox.grid(column=1, row=1, sticky='E', padx=5, pady=5)
 		
 		return frame
 		
-	def make_normal_frame(self, notebook): # TODO implement this
+	def make_normal_frame(self, notebook):
 		frame = ttk.Frame(notebook, padding=10)
 		self.normal_parameters = {}
 		

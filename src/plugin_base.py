@@ -33,8 +33,8 @@ class Plugin_Base():
 	
 	#~ With this method, your plugin can register handlers for certain events.
 	#~ The handler should accept one parameter, event, which is a 2-tuple of
-	#~ - the event_id (a string that identifies a type of event)
-	#~ - an event-dependent arbitrary object (might be None) that helps process the event
+	#~ - the event id (a string that denotes the type of event)
+	#~ - a event-dependent arbitrary object (might be None)
 	def register_event_handler(self, event_id, handler):
 		self._event_handlers[event_id] = handler
 
