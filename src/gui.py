@@ -64,6 +64,11 @@ class Visualization_frame(ttk.Frame):
 		h_scrollbar.grid(column=0, row=1, sticky='E W')
 		v_scrollbar.grid(column=1, row=0, sticky='N S')
 		
+		#~ parent.bind_all("<Button-4>", lambda event: self.canvas.yview_scroll(-1*(event.delta // 1), 'units'))
+		#~ parent.bind_all("<Button-5>", lambda event: self.canvas.yview_scroll(-1*(event.delta // 1), 'units'))
+		parent.bind_all("<Button-4>", lambda event: self.canvas.yview_scroll(-1, 'units'))
+		parent.bind_all("<Button-5>", lambda event: self.canvas.yview_scroll(1, 'units'))
+		
 		scale_frame = ttk.Frame(self, borderwidth=5)
 		scale_frame.grid(column=0, row=2, sticky='N E W S')
 		scale_frame.columnconfigure(2, weight=1)
