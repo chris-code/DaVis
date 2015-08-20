@@ -87,9 +87,12 @@ class Visualization_frame(ttk.Frame):
 		scale_frame.grid(column=0, row=2, sticky='N E W S')
 		scale_frame.columnconfigure(2, weight=1)
 		self.scale_variable = tk.DoubleVar()
+		self.scale_variable_string = tk.StringVar() # For displaying, will be fixed to 2 decimal places
+		self.scale_variable.trace('w', lambda _1, _2, _3:
+			self.scale_variable_string.set( '{0:.2f}'.format(self.scale_variable.get()) ))
 		scale_literal = ttk.Label(scale_frame, text='Scale:')
 		scale_literal.grid(column=0, row=0)
-		scale_label = ttk.Label(scale_frame, textvariable=self.scale_variable, width=4)
+		scale_label = ttk.Label(scale_frame, textvariable=self.scale_variable_string, width=4)
 		scale_label.grid(column=1, row=0, padx=5, pady=5, sticky='W')
 		callback = lambda new_scale: self.redraw()
 		scale_bar = ttk.Scale(scale_frame, orient=tk.HORIZONTAL, from_=0.01, to=10.0, variable=self.scale_variable, command=callback)
