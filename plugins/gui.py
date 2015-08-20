@@ -99,6 +99,11 @@ class Visualization_frame(ttk.Frame):
 		scale_bar.grid(column=2, row=0, padx=5, pady=5, stick='E W')
 		self.scale_variable.set(1.0)
 	
+	#~ Need to flip all points on canvas vertically since canvas starts counting from TOP-left corner.
+	def _flip_vertial(self):
+		for identifier in self.canvas.find_all():
+			self.canvas.scale(identifier, 0, 0, 1, -1)
+	
 	def rescale(self):
 		self.plugin_manager.notify_all( ('rescale_pre', None) )
 		scale = self.scale_variable.get()
@@ -109,6 +114,9 @@ class Visualization_frame(ttk.Frame):
 	def redraw(self):
 		self.canvas.delete(tk.ALL)
 		self.plugin_manager.notify_all( ('redraw', None) )
+		
+		#~ Flip since canvas counts from TOP-left corner.
+		self._flip_vertial()
 		
 		#~ Rescale
 		self.rescale()
