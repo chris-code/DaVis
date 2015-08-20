@@ -6,7 +6,7 @@ except ImportError:
 import tkinter as tk
 import tkinter.ttk as ttk
 import tkinter.colorchooser as tkcc
-import plugin_base
+import plugin
 
 class Parameter_Query_Window(tk.Toplevel):
 	def __init__(self, parent):
@@ -151,18 +151,18 @@ class Parameter_Query_Window(tk.Toplevel):
 		else:
 			return None
 
-class Point_Cloud(plugin_base.Plugin_Base):
+class Point_Cloud(plugin.Plugin):
 	def __init__(self):
 		super().__init__()
 		
-		self.program.data_frame.add_action('New from distribution', 'pq_new_from_distribution', None)
-		self.program.data_frame.add_action('Clear', 'pq_clear', None)
+		self.data['gui'].data_frame.add_action('New from distribution', 'pq_new_from_distribution', None)
+		self.data['gui'].data_frame.add_action('Clear', 'pq_clear', None)
 		self.register_event_handler('pq_new_from_distribution', self.new_from_distribution)
 		self.register_event_handler('pq_clear', self.clear)
 		self.register_event_handler('redraw', self.draw)
 	
 	def new_from_distribution(self, event):
-		result = Parameter_Query_Window.get_values(self.program)
+		result = Parameter_Query_Window.get_values(self.data['gui'])
 		
 		if result is not None:
 			distribution, parameters, count, color = result
@@ -180,19 +180,19 @@ class Point_Cloud(plugin_base.Plugin_Base):
 				raise Exception('Unknown distribution')
 			
 			try:
-				self.program.get_data()['points'].append( (points, color) )
+				self.data['points'].append( (points, color) )
 			except KeyError:
-				self.program.get_data()['points'] = [ (points, color) ]
-			self.program.redraw()
+				self.data['points'] = [ (points, color) ]
+			self.data['gui'].redraw()
 	
 	def clear(self, event):
-		self.program.get_data()['points'] = []
-		self.program.redraw()
+		self.data['points'] = []
+		self.data['gui'].redraw()
 	
 	def draw(self, event):
-		canvas = self.program.get_canvas()
+		canvas = self.data['gui'].get_canvas()
 		try:
-			data = self.program.get_data()['points']
+			data = self.data['points']
 		except KeyError:
 			return # No data (yet), that's ok.
 		for point_set, color in data:
