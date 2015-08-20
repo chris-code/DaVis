@@ -14,13 +14,25 @@ class Main_window(tk.Tk):
 		self.columnconfigure(1, weight=1)
 		self.rowconfigure(0, weight=1)
 		
+		
+		self.bind_all("<MouseWheel>", lambda event: self.distribute_scroll_events(event)) # Windows
+		self.bind_all("<Button-4>", lambda event: self.distribute_scroll_events(event)) # Linux
+		self.bind_all("<Button-5>", lambda event: self.distribute_scroll_events(event)) # Linux
+		
 		self.data = {}
 		
 		self.data_frame = Data_frame(self, plugin_base)
 		self.visualization_frame = Visualization_frame(self, plugin_base)
 		self.operations_frame = Operations_frame(self, plugin_base)
 		ttk.Sizegrip(self).grid(column=3, row=0, sticky='E S')
-		
+	
+	def distribute_scroll_events(self, event, ):
+		scroll_magnitude = -1 if event.num == 4 else 1
+		try:
+			event.widget.yview_scroll(scroll_magnitude, 'units')
+		except AttributeError:
+			pass # Not scrollable, carry on
+	
 	# Convenience methods
 	def get_data(self):
 		return self.data
@@ -63,11 +75,6 @@ class Visualization_frame(ttk.Frame):
 		v_scrollbar['command'] = self.canvas.yview
 		h_scrollbar.grid(column=0, row=1, sticky='E W')
 		v_scrollbar.grid(column=1, row=0, sticky='N S')
-		
-		#~ parent.bind_all("<Button-4>", lambda event: self.canvas.yview_scroll(-1*(event.delta // 1), 'units'))
-		#~ parent.bind_all("<Button-5>", lambda event: self.canvas.yview_scroll(-1*(event.delta // 1), 'units'))
-		parent.bind_all("<Button-4>", lambda event: self.canvas.yview_scroll(-1, 'units'))
-		parent.bind_all("<Button-5>", lambda event: self.canvas.yview_scroll(1, 'units'))
 		
 		scale_frame = ttk.Frame(self, borderwidth=5)
 		scale_frame.grid(column=0, row=2, sticky='N E W S')
