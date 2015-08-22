@@ -56,7 +56,6 @@ class Main_window(tk.Tk, plugin.Plugin):
 		self.menu_file.add_command(label='Exit', command=self.destroy)
 		self.menubar.add_cascade(menu= self.menu_file, label='File')
 		
-		#~ FIXME remove commented code
 		self.plugin_menu_variables = {} # Stores the tk.BooleanVar()s that indicate which plugins are selected
 		self.menu_plugins = tk.Menu(self.menubar)
 		for plugin_name in self.plugin_manager.list_of_plugins().keys():
@@ -86,9 +85,9 @@ class Main_window(tk.Tk, plugin.Plugin):
 		_, plugin_name = event
 		self.plugin_menu_variables[plugin_name].set(False)
 	
-	#~ FIXME implement this
 	def unload(self):
-		pass
+		del self.data['gui']
+		del self.data['run_after_init']
 	
 	# Convenience methods
 	def get_data(self):
@@ -213,6 +212,18 @@ class Operations_frame(ttk.Frame):
 		action = ttk.Button(self, text=name, command=callback)
 		action.grid(column=0, row=self.action_count, sticky='W N E S')
 		self.action_count += 1
+	
+	#~ FIXME this method should move up buttons below the deleted one and decrease self.action_count
+	def remove_action(self, name):
+		for child in self.children.values():
+			if child['text'] == name:
+				child_to_remove = child
+				break
+		else:
+			print('what?')
+			return
+		child_to_remove.grid_forget()
+		child_to_remove.destroy()
 
 
 

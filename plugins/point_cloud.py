@@ -199,9 +199,14 @@ class Point_Cloud(plugin.Plugin):
 			for point in point_set:
 				canvas.create_oval(point[0], point[1], point[0], point[1], fill=color, outline=color)
 	
-	#~ FIXME implement this
 	def unload(self):
-		pass
+		self.data['gui'].data_frame.remove_action('New from distribution')
+		self.data['gui'].data_frame.remove_action('Clear')
+		try:
+			del self.data['points']
+		except KeyError:
+			pass
+		self.data['gui'].redraw()
 
 
 
