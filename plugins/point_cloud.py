@@ -153,7 +153,7 @@ class Parameter_Query_Window(tk.Toplevel):
 
 class Point_Cloud(plugin.Plugin):
 	def __init__(self):
-		super().__init__()
+		self.name = 'Point cloud'
 		
 		self.data['gui'].data_frame.add_action('New from distribution', 'pq_new_from_distribution', None)
 		self.data['gui'].data_frame.add_action('Clear', 'pq_clear', None)
@@ -198,6 +198,10 @@ class Point_Cloud(plugin.Plugin):
 		for point_set, color in data:
 			for point in point_set:
 				canvas.create_oval(point[0], point[1], point[0], point[1], fill=color, outline=color)
+	
+	#~ FIXME implement this
+	def unload(self):
+		pass
 
 
 

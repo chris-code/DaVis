@@ -11,8 +11,12 @@ class Main_window(tk.Tk, plugin.Plugin):
 		#~ Other lines before it may cause inexplicable recursion depth errors.
 		tk.Tk.__init__(self)
 		
+		self.name = 'GUI'
 		self.data['gui'] = self
+		self.register_event_handler('plugin_loaded', self.handle_plugin_loaded)
+		self.register_event_handler('plugin_unloaded', self.handle_plugin_unloaded)
 		
+		self.option_add('*tearOff', tk.FALSE) # Prevent glitchy menus
 		self.title('DaVis')
 		self.minsize(400, 200)
 		self.geometry('{0}x{1}+30+30'.format(default_width, default_height))
@@ -24,6 +28,7 @@ class Main_window(tk.Tk, plugin.Plugin):
 		self.bind_all("<Button-4>", lambda event: self.distribute_scroll_events(event)) # Linux
 		self.bind_all("<Button-5>", lambda event: self.distribute_scroll_events(event)) # Linux
 		
+		self.build_menu()
 		self.data_frame = Data_frame(self, self.plugin_manager)
 		self.visualization_frame = Visualization_frame(self, self.plugin_manager)
 		self.operations_frame = Operations_frame(self, self.plugin_manager)
@@ -42,6 +47,48 @@ class Main_window(tk.Tk, plugin.Plugin):
 			event.widget.yview_scroll(scroll_magnitude, 'units')
 		except AttributeError:
 			pass # Not scrollable, carry on
+	
+	def build_menu(self):
+		self.menubar = tk.Menu(self)
+		self['menu'] = self.menubar
+		
+		self.menu_file = tk.Menu(self.menubar)
+		self.menu_file.add_command(label='Exit', command=self.destroy)
+		self.menubar.add_cascade(menu= self.menu_file, label='File')
+		
+		#~ FIXME remove commented code
+		self.plugin_menu_variables = {} # Stores the tk.BooleanVar()s that indicate which plugins are selected
+		self.menu_plugins = tk.Menu(self.menubar)
+		for plugin_name in self.plugin_manager.list_of_plugins().keys():
+			self.plugin_menu_variables[plugin_name] = tk.BooleanVar()
+			self.plugin_menu_variables[plugin_name].set(True)
+			callback = lambda: self.handle_plugin_toggled(plugin_name, self.plugin_menu_variables[plugin_name])
+			self.menu_plugins.add_checkbutton(label=plugin_name, onvalue=True, offvalue=False, variable=self.plugin_menu_variables[plugin_name], command=callback)
+		self.menubar.add_cascade(menu= self.menu_plugins, label='Plugins')
+	
+	def handle_plugin_toggled(self, name, variable):
+		if variable.get():
+			self.plugin_manager.load(plugin_name=name)
+		else:
+			self.plugin_manager.unload(plugin_name=name)
+	
+	def handle_plugin_loaded(self, event):
+		_, plugin_name = event
+		if plugin_name in self.plugin_menu_variables:
+			self.plugin_menu_variables[plugin_name].set(True)
+		else:
+			self.plugin_menu_variables[plugin_name] = tk.BooleanVar()
+			self.plugin_menu_variables[plugin_name].set(True)
+			callback = lambda: self.handle_plugin_toggled(plugin_name, self.plugin_menu_variables[plugin_name])
+			self.menu_plugins.add_checkbutton(label=plugin_name, onvalue=True, offvalue=False, variable=self.plugin_menu_variables[plugin_name], command=callback)
+	
+	def handle_plugin_unloaded(self, event):
+		_, plugin_name = event
+		self.plugin_menu_variables[plugin_name].set(False)
+	
+	#~ FIXME implement this
+	def unload(self):
+		pass
 	
 	# Convenience methods
 	def get_data(self):
@@ -67,6 +114,18 @@ class Data_frame(ttk.Frame):
 		action = ttk.Button(self, text=name, command=callback)
 		action.grid(column=0, row=self.action_count, sticky='W N E S')
 		self.action_count += 1
+	
+	#~ FIXME this method should move up buttons below the deleted one and decrease self.action_count
+	def remove_action(self, name):
+		for child in self.children.values():
+			if child['text'] == name:
+				child_to_remove = child
+				break
+		else:
+			print('what?')
+			return
+		child_to_remove.grid_forget()
+		child_to_remove.destroy()
 
 class Visualization_frame(ttk.Frame):
 	def __init__(self, parent, plugin_manager):
@@ -154,8 +213,6 @@ class Operations_frame(ttk.Frame):
 		action = ttk.Button(self, text=name, command=callback)
 		action.grid(column=0, row=self.action_count, sticky='W N E S')
 		self.action_count += 1
-
-
 
 
 
