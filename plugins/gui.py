@@ -7,9 +7,12 @@ default_width, default_height = 800, 400
 
 class Main_window(tk.Tk, plugin.Plugin):
 	def __init__(self):
+		#~ Caution! For reasons i don't really understand, this absolutely has to be the first line in the constructor.
+		#~ Other lines before it may cause inexplicable recursion depth errors.
+		tk.Tk.__init__(self)
+		
 		self.data['gui'] = self
 		
-		tk.Tk.__init__(self)
 		self.title('DaVis')
 		self.minsize(400, 200)
 		self.geometry('{0}x{1}+30+30'.format(default_width, default_height))
