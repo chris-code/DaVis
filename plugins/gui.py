@@ -88,6 +88,7 @@ class Main_window(tk.Tk, plugin.Plugin):
 	def unload(self):
 		del self.data['gui']
 		del self.data['run_after_init']
+		self.destroy()
 	
 	# Convenience methods
 	def get_data(self):
