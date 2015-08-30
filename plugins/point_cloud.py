@@ -8,7 +8,7 @@ import tkinter.ttk as ttk
 import tkinter.colorchooser as tkcc
 import plugin
 
-class Parameter_Query_Window(tk.Toplevel):
+class Distribution_Query_Window(tk.Toplevel):
 	def __init__(self, parent):
 		super().__init__(parent)
 			
@@ -151,18 +151,91 @@ class Parameter_Query_Window(tk.Toplevel):
 		else:
 			return None
 
+class Transformation_Query_Window(tk.Toplevel):
+	def __init__(self, parent, data):
+		super().__init__(parent)
+			
+		self.title('Data from distribution')
+		self.resizable(tk.FALSE, tk.FALSE)
+		self.protocol('WM_DELETE_WINDOW', self.cancel_action)
+		self.grab_set() # Make window modal
+		
+		self.nb = ttk.Notebook(self)
+		self.nb.grid(column=0, row=0, sticky='N E W S', padx=10, pady=10)
+		self.nb.add(self.make_arbitrary_frame(self.nb), text='Arbitrary', sticky='EW')
+		
+		data_select_frame = ttk.LabelFrame(self, padding=5, text='Data sets to transform')
+		data_select_frame.grid(column=0, row=1, sticky='N E W S', padx=5, pady=5)
+		data_select_frame.columnconfigure(1, weight=1)
+		row = 0
+		self.selected_datasets = []
+		for index, dataset in enumerate(data):
+			points, color = dataset
+			tk.Canvas(data_select_frame, background=color, width=15, height=15).grid(column=0, row=index)
+			selection_variable = tk.BooleanVar()
+			selection_variable.set(True)
+			ttk.Checkbutton(data_select_frame, variable=selection_variable, onvalue=True, offvalue=False).grid(column=1, row=index)
+			self.selected_datasets.append(selection_variable)
+		
+		confirmation_frame = ttk.Frame(self)
+		confirmation_frame.grid(column=0, row=2, sticky='N E W S', padx=10, pady=10)
+		confirmation_frame.columnconfigure(1, weight=1)
+		ttk.Button(confirmation_frame, text='Cancel', command=self.cancel_action).grid(column=0, row=0, sticky='N W S')
+		ttk.Button(confirmation_frame, text='Ok', command=self.ok_action).grid(column=1, row=0, sticky='N E S')
+	
+	def make_arbitrary_frame(self, notebook): # TODO alignment. Looks bad.
+		frame = ttk.Frame(notebook, padding=10)
+		self.arbitrary_matrix = []
+		for row in range(0,2):
+			self.arbitrary_matrix.append([])
+			for column in range(0,2):
+				cell_var = tk.DoubleVar()
+				cell_var.set(0)
+				ttk.Entry(frame, width=6, textvariable=cell_var).grid(column=column, row=row)
+				self.arbitrary_matrix[row].append(cell_var)
+		return frame
+	
+	def color_choose_action(self):
+		_, self.color = tkcc.askcolor()
+	
+	def ok_action(self):
+		self.trafo = self.nb.tab(self.nb.select(), 'text')
+		self.destroy()
+	
+	def cancel_action(self):
+		self.trafo = None
+		self.destroy()
+	
+	@classmethod
+	def get_values(cls, program, data):
+		window = cls(program, data)
+		window.wait_window()
+		
+		if window.trafo is not None:
+			selected_datasets = [b.get() for b in window.selected_datasets]
+			
+			if window.trafo == 'Arbitrary':
+				matrix = window.arbitrary_matrix
+				parameters = [[var.get() for var in row] for row in matrix]
+			
+			return window.trafo, parameters, selected_datasets
+		else:
+			return None
+
 class Point_Cloud(plugin.Plugin):
 	def __init__(self):
 		self.name = 'Point cloud'
 		
 		self.data['gui'].data_frame.add_action('New from distribution', 'pq_new_from_distribution', None)
+		self.data['gui'].data_frame.add_action('Transform', 'pq_transform', None)
 		self.data['gui'].data_frame.add_action('Clear', 'pq_clear', None)
 		self.register_event_handler('pq_new_from_distribution', self.new_from_distribution)
+		self.register_event_handler('pq_transform', self.transform)
 		self.register_event_handler('pq_clear', self.clear)
 		self.register_event_handler('redraw', self.draw)
 	
 	def new_from_distribution(self, event):
-		result = Parameter_Query_Window.get_values(self.data['gui'])
+		result = Distribution_Query_Window.get_values(self.data['gui'])
 		
 		if result is not None:
 			distribution, parameters, count, color = result
@@ -183,6 +256,28 @@ class Point_Cloud(plugin.Plugin):
 				self.data['points'].append( (points, color) )
 			except KeyError:
 				self.data['points'] = [ (points, color) ]
+			self.data['gui'].redraw()
+	
+	def transform(self, event):
+		try:
+			datasets = self.data['points']
+		except KeyError:
+			datasets = []
+		result = Transformation_Query_Window.get_values(self.data['gui'], datasets)
+		
+		if result is not None:
+			trafo, transform_data, selected_datasets = result
+			
+			if trafo == 'Arbitrary':
+				transform_matrix = np.empty(shape=(2,2))
+				for row, row_data in enumerate(transform_data):
+					transform_matrix[row,:] = row_data
+				
+				for index, decision in enumerate(selected_datasets):
+					if decision:
+						points, color = self.data['points'][index]
+						points = ( np.dot(transform_matrix, points.T) ).T
+						self.data['points'][index] = (points, color)
 			self.data['gui'].redraw()
 	
 	def clear(self, event):
