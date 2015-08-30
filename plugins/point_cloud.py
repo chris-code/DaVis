@@ -183,15 +183,19 @@ class Transformation_Query_Window(tk.Toplevel):
 		ttk.Button(confirmation_frame, text='Cancel', command=self.cancel_action).grid(column=0, row=0, sticky='N W S')
 		ttk.Button(confirmation_frame, text='Ok', command=self.ok_action).grid(column=1, row=0, sticky='N E S')
 	
-	def make_arbitrary_frame(self, notebook): # TODO alignment. Looks bad.
+	def make_arbitrary_frame(self, notebook):
 		frame = ttk.Frame(notebook, padding=10)
+		ttk.Label(frame, text='Matrix').grid(column=0, row=0, padx=5, pady=5, sticky='W')
+		
+		matrix_frame = ttk.Frame(frame, padding=5)
+		matrix_frame.grid(column=1, row=0, sticky='N E S')
 		self.arbitrary_matrix = []
 		for row in range(0,2):
 			self.arbitrary_matrix.append([])
 			for column in range(0,2):
 				cell_var = tk.DoubleVar()
 				cell_var.set(0)
-				ttk.Entry(frame, width=6, textvariable=cell_var).grid(column=column, row=row)
+				ttk.Entry(matrix_frame, width=6, textvariable=cell_var).grid(column=column, row=row)
 				self.arbitrary_matrix[row].append(cell_var)
 		return frame
 	
